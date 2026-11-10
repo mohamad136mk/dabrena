@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#0f3d2e">
+<title>دبرنا</title>
+<style>
+:root{--bg:#0f3d2e;--card:#fff8e7;--ink:#2b2b2b;--accent:#f5b301;--red:#d94a3d;--ok:#2e9e5b;--soft:#1b5a44}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:#fff;font-family:Tahoma,Vazirmatn,system-ui,sans-serif;min-height:100vh}
+.screen{display:none;padding:16px;max-width:520px;margin:0 auto}
+.screen.on{display:block}
+h1{text-align:center;font-size:34px;margin:18px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:0 0 10px;color:var(--accent)}
+p.sub{text-align:center;margin:0 0 18px;opacity:.85;font-size:14px}
+.box{background:var(--soft);border-radius:14px;padding:14px;margin-bottom:12px}
+button{font:inherit;border:0;border-radius:12px;padding:13px 16px;font-weight:bold;background:var(--accent);color:#222;width:100%;margin-top:8px;cursor:pointer}
+button.sec{background:#2d7a5c;color:#fff}
+button.red{background:var(--red);color:#fff}
+button:disabled{opacity:.45}
+input,textarea{font:inherit;width:100%;padding:11px;border-radius:10px;border:0;margin-top:6px;background:#fff;color:#222}
+textarea{height:80px;font-size:11px;direction:ltr;word-break:break-all}
+label{font-size:14px;display:block;margin-top:8px}
+.row{display:flex;gap:8px}.row>*{flex:1}
+.small{font-size:12px;opacity:.8;line-height:1.7}
+.pl{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #ffffff22;font-size:14px}
+.big{font-size:84px;font-weight:bold;text-align:center;color:var(--accent);line-height:1.1;margin:6px 0}
+.hist{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:10px}
+.hist span{background:#ffffff22;border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.cardw{background:var(--card);border-radius:12px;padding:8px;margin-bottom:12px;color:var(--ink)}
+.cardw .t{font-size:12px;display:flex;justify-content:space-between;margin-bottom:5px}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.cell{background:#fff;border:2px solid #e6d9b5;border-radius:9px;padding:10px 0;text-align:center;font-size:19px;font-weight:bold;user-select:none}
+.cell.m{background:var(--ok);border-color:var(--ok);color:#fff}
+.cell.c{border-color:var(--accent)}
+.toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:#000c;padding:10px 16px;border-radius:10px;z-index:9;display:none;font-size:14px}
+.ov{position:fixed;inset:0;background:#000d;display:none;align-items:center;justify-content:center;z-index:8;padding:16px}
+.ov.on{display:flex}.ov .in{background:var(--bg);border:3px solid var(--accent);border-radius:18px;padding:18px;max-width:420px;width:100%;max-height:92vh;overflow:auto}
+.top{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;opacity:.9}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<button id="gear" onclick="openSet()" style="position:fixed;top:10px;left:10px;width:auto;padding:6px 12px;margin:0;z-index:5;background:#2d7a5c;color:#fff">⚙️ تنظیمات</button>
+
+<!-- تنظیمات -->
+<div class="ov" id="setOv"><div class="in">
+  <h2>⚙️ تنظیمات</h2>
+  <div class="box">
+    <b>📲 نصب روی گوشی</b>
+    <button onclick="installApp()" id="instBtn">نصب برنامه روی گوشی</button>
+    <div class="small" id="instHelp" style="margin-top:8px">
+      اگه دکمهٔ بالا کار نکرد، با Chrome: منوی ⋮ بالای صفحه ← «Add to Home screen» (افزودن به صفحهٔ اصلی) ← «Add».<br>
+      بعدش یه آیکون «دبرنا» روی صفحهٔ گوشی‌تون می‌مونه. فایل بازی رو هم نگه دارید تا بدون اینترنت هر وقت خواستید باز کنید.
+    </div>
+  </div>
+  <div class="box">
+    <b>📶 وصل شدن با هات‌اسپات یا وای‌فای</b>
+    <div class="small" style="margin-top:6px">
+      • یک نفر هات‌اسپات گوشی‌ش رو روشن کنه و بقیه بهش وصل بشن، یا همه به یک وای‌فای وصل باشن.<br>
+      • اینترنت لازم نیست؛ حتی اگه هات‌اسپات یا وای‌فای نت نداشته باشه بازی کار می‌کنه.<br>
+      • سرگروه «کد پاسخ» رو برای هر بازیکن می‌فرسته و بازیکن باید توی همون شبکه باشه.
+    </div>
+  </div>
+  <div class="box">
+    <b>👑 ابزارهای سرگروه</b>
+    <div class="small" style="margin-top:6px">
+      • روی اسم هر بازیکن بزنید تا ✅ «پرداخت کرد» بخوره (برای همه دیده می‌شه).<br>
+      • هر لحظه با دکمهٔ «⏹ توقف خواندن اعداد» می‌تونید خوندن عدد رو متوقف و دوباره ادامه بدید.
+    </div>
+  </div>
+  <button onclick="$('setOv').classList.remove('on')">بستن</button>
+</div></div>
+
+<!-- خانه -->
+<div class="screen on" id="s-home">
+  <h1>🎯 دبرنا</h1>
+  <p class="sub">بازی گروهی ۲ تا ۲۰ نفره — بدون اینترنت</p>
+  <div class="box small">
+    همهٔ گوشی‌ها باید به یک وای‌فای یا هات‌اسپات مشترک وصل باشند (نیازی به اینترنت نیست).<br>
+    قیمت هر کارت: <b id="priceTxt"></b>
+  </div>
+  <button onclick="goHost()">👑 من سرگروه هستم (ساخت بازی)</button>
+  <button class="sec" onclick="goJoin()">🙋 می‌خوام به بازی وصل بشم</button>
+</div>
+
+<!-- سرگروه: لابی -->
+<div class="screen" id="s-host">
+  <h2>👑 سرگروه</h2>
+  <div class="box">
+    <label>اسم شما<input id="hName" value="سرگروه"></label>
+    <label>تعداد کارت شما (هر کارت <span class="pt"></span>)
+      <input id="hCards" type="number" min="1" max="6" value="1"></label>
+    <label>فاصلهٔ زمانی اعداد: <b id="ivTxt">6</b> ثانیه
+      <input id="hInt" type="range" min="2" max="30" value="6"></label>
+  </div>
+
+  <div class="box" id="addBox">
+    <h2>➕ افزودن بازیکن</h2>
+    <div class="small">۱) بازیکن «کد اتصال» خودش را برای شما می‌فرستد (پیامک، بلوتوث، تلگرام و...).<br>۲) کد را اینجا بچسبانید و «ساخت پاسخ» را بزنید.<br>۳) کد پاسخ را برای بازیکن بفرستید.</div>
+    <textarea id="offerIn" placeholder="کد اتصال بازیکن را اینجا بچسبانید"></textarea>
+    <button class="sec" onclick="hostAccept()">ساخت پاسخ</button>
+    <div id="ansBox" style="display:none">
+      <textarea id="ansOut" readonly></textarea>
+      <div class="row"><button class="sec" onclick="copyEl('ansOut')">📋 کپی</button><button class="sec" onclick="shareEl('ansOut')">📤 ارسال</button></div>
+    </div>
+  </div>
+
+  <div class="box">
+    <h2>بازیکن‌ها (<span id="pc">1</span> از ۲۰)</h2>
+    <div class="small">روی هر ردیف بزنید تا «پرداخت کرد» ✅ بخوره.</div>
+    <div id="plist"></div>
+    <div class="pl" style="border:0"><b>💰 مجموع کارت‌ها</b><b id="potTxt"></b></div>
+  </div>
+  <button onclick="hostStart()" id="startBtn">▶️ شروع بازی</button>
+</div>
+
+<!-- بازیکن: اتصال -->
+<div class="screen" id="s-join">
+  <h2>🙋 اتصال به بازی</h2>
+  <div class="box">
+    <label>اسم شما<input id="pName" placeholder="مثلاً علی"></label>
+    <label>تعداد کارت (هر کارت <span class="pt"></span>)
+      <input id="pCards" type="number" min="1" max="6" value="1"></label>
+    <button onclick="makeOffer()">۱) ساخت کد اتصال</button>
+  </div>
+  <div class="box" id="step2" style="display:none">
+    <div class="small">این کد را برای سرگروه بفرستید. سرگروه یک کد پاسخ به شما می‌دهد؛ آن را پایین بچسبانید.</div>
+    <textarea id="offerOut" readonly></textarea>
+    <div class="row"><button class="sec" onclick="copyEl('offerOut')">📋 کپی</button><button class="sec" onclick="shareEl('offerOut')">📤 ارسال</button></div>
+    <label>۲) کد پاسخ سرگروه<textarea id="answerIn" placeholder="کد پاسخ را اینجا بچسبانید"></textarea></label>
+    <button onclick="finishJoin()">اتصال</button>
+  </div>
+</div>
+
+<!-- بازیکن: انتظار -->
+<div class="screen" id="s-wait">
+  <h2>⏳ در انتظار شروع بازی</h2>
+  <div class="box"><div id="wlist"></div>
+    <div class="pl" style="border:0"><b>💰 مجموع کارت‌ها</b><b id="wpot"></b></div>
+    <div class="small">فاصلهٔ اعداد: <span id="wint"></span> ثانیه</div>
+  </div>
+</div>
+
+<!-- بازی -->
+<div class="screen" id="s-game">
+  <div class="top"><span id="gInfo"></span><span id="gPot"></span></div>
+  <div class="big" id="cur">—</div>
+  <div class="hist" id="hist"></div>
+  <div id="hostCtl" style="display:none">
+    <button class="red" id="pauseBtn" onclick="togglePause()">⏹ توقف خواندن اعداد</button>
+    <button class="sec" onclick="changeInt()">⏱ تغییر زمان بین اعداد</button>
+  </div>
+  <details class="box" style="margin-top:10px"><summary>👥 بازیکن‌ها و پرداخت‌ها</summary><div id="glist" style="margin-top:8px"></div></details>
+  <div class="small" style="margin:8px 0"><label style="display:inline"><input type="checkbox" id="auto" checked style="width:auto"> علامت‌گذاری خودکار</label></div>
+  <div id="cards"></div>
+  <button class="red" onclick="claimBar()" style="position:sticky;bottom:10px">🎉 دبرنا!</button>
+</div>
+
+<!-- نتیجه -->
+<div class="ov" id="ov"><div class="in">
+  <h2 id="ovT">🏆</h2>
+  <div id="ovB"></div>
+  <button id="ovBtn" onclick="closeOv()">بستن</button>
+</div></div>
+
+<script>
+const PRICE=10000, MAXP=20;
+const $=id=>document.getElementById(id);
+const fa=n=>Number(n).toLocaleString('fa-IR');
+const money=n=>fa(n)+' تومان';
+let role=null, me={name:'',cards:1}, peers=new Map(), pidc=0;
+let pc=null, dc=null;               // سمت بازیکن
+let G={cards:[],called:[],marks:new Set(),pool:[],timer:null,interval:6,paused:false,over:false,pot:0,total:0};
+
+document.querySelectorAll('.pt').forEach(e=>e.textContent=money(PRICE));
+$('priceTxt').textContent=money(PRICE);
+
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));$(id).classList.add('on');window.scrollTo(0,0)}
+function toast(t){const e=$('toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display='none',2600)}
+function clampCards(v){v=parseInt(v)||1;return Math.max(1,Math.min(6,v))}
+
+/* ---------- ابزار اتصال ---------- */
+const b64=u8=>{let s='';u8.forEach(b=>s+=String.fromCharCode(b));return btoa(s)};
+const unb64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function pack(o){
+  const s=JSON.stringify(o);
+  if(window.CompressionStream){
+    const cs=new CompressionStream('deflate-raw');const w=cs.writable.getWriter();
+    w.write(new TextEncoder().encode(s));w.close();
+    return 'z'+b64(new Uint8Array(await new Response(cs.readable).arrayBuffer()));
+  }
+  return 'j'+btoa(unescape(encodeURIComponent(s)));
+}
+async function unpack(c){
+  c=c.trim();
+  if(c[0]==='z'){
+    const ds=new DecompressionStream('deflate-raw');const w=ds.writable.getWriter();
+    w.write(unb64(c.slice(1)));w.close();
+    return JSON.parse(new TextDecoder().decode(await new Response(ds.readable).arrayBuffer()));
+  }
+  return JSON.parse(decodeURIComponent(escape(atob(c.slice(1)))));
+}
+function mkPC(){return new RTCPeerConnection({iceServers:[]})}
+function waitIce(p){return new Promise(res=>{
+  if(p.iceGatheringState==='complete')return res();
+  const t=setTimeout(res,5000);
+  p.addEventListener('icegatheringstatechange',()=>{if(p.iceGatheringState==='complete'){clearTimeout(t);res()}});
+})}
+function copyEl(id){const e=$(id);e.select();e.setSelectionRange(0,99999);
+  (navigator.clipboard?navigator.clipboard.writeText(e.value):Promise.reject()).then(()=>toast('کپی شد ✅')).catch(()=>{document.execCommand('copy');toast('کپی شد ✅')})}
+function shareEl(id){const v=$(id).value;if(navigator.share)navigator.share({text:v}).catch(()=>{});else copyEl(id)}
+const send=(ch,m)=>{try{if(ch&&ch.readyState==='open')ch.send(JSON.stringify(m))}catch(e){}};
+const bcast=m=>peers.forEach(p=>send(p.dc,m));
+
+/* ---------- منطق بازی ---------- */
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function genCard(){
+  const n=shuffle(Array.from({length:99},(_,i)=>i+1)).slice(0,20);
+  const rows=[];for(let r=0;r<4;r++)rows.push(n.slice(r*5,r*5+5).sort((a,b)=>a-b));
+  return rows;
+}
+const genCards=k=>Array.from({length:k},genCard);
+function cardWins(card,called){const s=new Set(called);return card.some(row=>row.every(x=>s.has(x)))}
+
+/* ---------- سرگروه ---------- */
+function goHost(){role='host';show('s-host');renderLobby()}
+$('hInt').oninput=e=>{$('ivTxt').textContent=e.target.value;G.interval=+e.target.value;bcastLobby()};
+$('hName').oninput=$('hCards').oninput=()=>renderLobby();
+
+async function hostAccept(){
+  if(peers.size>=MAXP-1)return toast('ظرفیت بازی پر است');
+  try{
+    const offer=await unpack($('offerIn').value);
+    const p={id:++pidc,pc:mkPC(),dc:null,name:'بازیکن',cardCount:1,cards:[]};
+    p.pc.ondatachannel=e=>{
+      p.dc=e.channel;
+      e.channel.onopen=()=>{peers.set(p.id,p);renderLobby();toast('یک بازیکن وصل شد')};
+      e.channel.onmessage=ev=>hostMsg(p,JSON.parse(ev.data));
+      e.channel.onclose=()=>dropPeer(p);
+    };
+    p.pc.onconnectionstatechange=()=>{if(['failed','closed'].includes(p.pc.connectionState))dropPeer(p)};
+    await p.pc.setRemoteDescription(offer);
+    await p.pc.setLocalDescription(await p.pc.createAnswer());
+    await waitIce(p.pc);
+    $('ansOut').value=await pack(p.pc.localDescription);
+    $('ansBox').style.display='block';
+    $('offerIn').value='';
+    toast('کد پاسخ آماده است');
+  }catch(e){toast('کد اتصال نامعتبر است')}
+}
+function dropPeer(p){if(peers.delete(p.id)){renderLobby();if(G.running)toast(p.name+' قطع شد')}}
+function hostMsg(p,m){
+  if(m.t==='join'){p.name=String(m.name||'بازیکن').slice(0,20);p.cardCount=clampCards(m.cards);renderLobby()}
+  if(m.t==='claim'&&!G.over){
+    if(!hostClaim(p.name,p.cards,m.i))send(p.dc,{t:'bad'});
+  }
+}
+let hostPaid=false;
+function lobbyData(){
+  const list=[{id:0,name:$('hName').value||'سرگروه',cards:clampCards($('hCards').value),host:1,paid:hostPaid}];
+  peers.forEach(p=>list.push({id:p.id,name:p.name,cards:p.cardCount,paid:!!p.paid}));
+  const tc=list.reduce((s,x)=>s+x.cards,0);
+  const pc2=list.filter(x=>x.paid).reduce((s,x)=>s+x.cards,0);
+  return {t:'lobby',players:list,pot:tc*PRICE,paidAmt:pc2*PRICE,interval:G.interval};
+}
+function playersHTML(d,canToggle){
+  return d.players.map(x=>`<div class="pl" ${canToggle?`onclick="togglePaid(${x.id})" style="cursor:pointer"`:''}><span>${x.paid?'✅':'⬜'} ${x.host?'👑 ':''}${esc(x.name)}</span><span>${fa(x.cards)} کارت • ${money(x.cards*PRICE)}</span></div>`).join('')+
+    `<div class="pl" style="border:0"><b>دریافت‌شده</b><b>${money(d.paidAmt)} از ${money(d.pot)}</b></div>`;
+}
+function togglePaid(id){
+  if(role!=='host')return;
+  if(id===0)hostPaid=!hostPaid;else{const p=peers.get(id);if(p)p.paid=!p.paid}
+  renderLobby();
+}
+function renderLobby(){
+  const d=lobbyData();
+  $('plist').innerHTML=playersHTML(d,true);
+  $('glist').innerHTML=playersHTML(d,true);
+  $('pc').textContent=fa(d.players.length);
+  $('potTxt').textContent=money(d.pot);
+  bcast(d);
+}
+const bcastLobby=()=>renderLobby();
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function hostStart(){
+  const d=lobbyData();
+  if(d.players.length<2)return toast('حداقل ۲ نفر لازم است');
+  me.name=d.players[0].name;me.cards=d.players[0].cards;
+  G.cards=genCards(me.cards);G.called=[];G.marks=new Set();G.over=false;G.paused=false;G.running=true;
+  G.pool=shuffle(Array.from({length:99},(_,i)=>i+1));
+  G.pot=d.pot;G.total=d.players.reduce((s,x)=>s+x.cards,0);
+  G.interval=+$('hInt').value;
+  peers.forEach(p=>{p.cards=genCards(p.cardCount);send(p.dc,{t:'start',cards:p.cards,pot:G.pot,total:G.total,interval:G.interval})});
+  $('hostCtl').style.display='block';$('pauseBtn').textContent='⏹ توقف خواندن اعداد';
+  enterGame();
+  setTimeout(()=>{draw();schedule()},1500);
+}
+function schedule(){clearInterval(G.timer);G.timer=setInterval(()=>{if(!G.paused&&!G.over)draw()},G.interval*1000)}
+function draw(){
+  if(G.over)return;
+  if(!G.pool.length){G.over=true;clearInterval(G.timer);const m={t:'win',none:1};bcast(m);showWin(m);return}
+  const n=G.pool.pop();G.called.push(n);
+  bcast({t:'num',n,called:G.called});onNum(n);
+}
+function togglePause(){
+  G.paused=!G.paused;$('pauseBtn').textContent=G.paused?'▶️ ادامه خواندن اعداد':'⏹ توقف خواندن اعداد';
+  bcast({t:G.paused?'pause':'resume'});toast(G.paused?'خواندن اعداد متوقف شد':'ادامه');
+}
+function changeInt(){
+  const v=parseInt(prompt('فاصلهٔ زمانی بین اعداد (ثانیه، ۲ تا ۳۰):',G.interval));
+  if(!v||v<2||v>30)return;
+  G.interval=v;$('hInt').value=v;$('ivTxt').textContent=v;schedule();bcast({t:'iv',interval:v});toast('هر '+fa(v)+' ثانیه');
+}
+function hostClaim(name,cards,i){
+  const c=cards[i];if(!c||G.over)return false;
+  if(!cardWins(c,G.called))return false;
+  G.over=true;clearInterval(G.timer);
+  const m={t:'win',name,card:c,pot:G.pot,called:G.called};
+  bcast(m);showWin(m);return true;
+}
+
+/* ---------- بازیکن ---------- */
+function goJoin(){role='player';show('s-join')}
+async function makeOffer(){
+  if(!window.RTCPeerConnection)return toast('مرورگر شما از اتصال مستقیم پشتیبانی نمی‌کند (از Chrome استفاده کنید)');
+  const name=$('pName').value.trim();if(!name)return toast('اسم را وارد کنید');
+  me.name=name;me.cards=clampCards($('pCards').value);
+  try{
+    pc=mkPC();dc=pc.createDataChannel('g');
+    dc.onopen=()=>{send(dc,{t:'join',name:me.name,cards:me.cards});show('s-wait');toast('وصل شدید ✅')};
+    dc.onmessage=e=>playerMsg(JSON.parse(e.data));
+    dc.onclose=()=>{toast('اتصال قطع شد');show('s-home')};
+    await pc.setLocalDescription(await pc.createOffer());
+    await waitIce(pc);
+    $('offerOut').value=await pack(pc.localDescription);
+    $('step2').style.display='block';
+  }catch(e){toast('خطا در ساخت کد')}
+}
+async function finishJoin(){
+  try{await pc.setRemoteDescription(await unpack($('answerIn').value));toast('در حال اتصال...')}
+  catch(e){toast('کد پاسخ نامعتبر است')}
+}
+function playerMsg(m){
+  if(m.t==='lobby'){
+    $('wlist').innerHTML=playersHTML(m,false);$('glist').innerHTML=playersHTML(m,false);
+    $('wpot').textContent=money(m.pot);$('wint').textContent=fa(m.interval);
+    if(!$('s-wait').classList.contains('on')&&!G.running)show('s-wait');
+  }
+  if(m.t==='start'){G.cards=m.cards;G.called=[];G.marks=new Set();G.over=false;G.pot=m.pot;G.total=m.total;G.running=true;$('hostCtl').style.display='none';enterGame()}
+  if(m.t==='num'){G.called=m.called;onNum(m.n)}
+  if(m.t==='pause')toast('سرگروه بازی را متوقف کرد');
+  if(m.t==='resume')toast('ادامه');
+  if(m.t==='iv')toast('فاصلهٔ اعداد: '+fa(m.interval)+' ثانیه');
+  if(m.t==='bad')toast('❌ هنوز یک ردیف کامل نشده');
+  if(m.t==='win'){G.over=true;showWin(m)}
+}
+
+/* ---------- رابط بازی ---------- */
+function enterGame(){
+  $('cur').textContent='—';$('hist').innerHTML='';
+  $('gInfo').textContent=esc(me.name)+' • '+fa(G.cards.length)+' کارت';
+  $('gPot').textContent='جایزه: '+money(G.pot);
+  renderCards();show('s-game');
+}
+function onNum(n){
+  $('cur').textContent=fa(n);
+  $('hist').innerHTML=G.called.slice(-9,-1).reverse().map(x=>`<span>${fa(x)}</span>`).join('');
+  if($('auto').checked)G.cards.forEach((c,ci)=>c.forEach((r,ri)=>r.forEach(x=>{if(x===n)G.marks.add(ci+'-'+x)})));
+  if(navigator.vibrate)navigator.vibrate(60);
+  renderCards();
+}
+function renderCards(){
+  const called=new Set(G.called),last=G.called[G.called.length-1];
+  $('cards').innerHTML=G.cards.map((c,ci)=>`<div class="cardw"><div class="t"><b>کارت ${fa(ci+1)}</b><button style="width:auto;padding:5px 12px;margin:0;font-size:12px" class="red" onclick="claim(${ci})">دبرنا!</button></div><div class="grid">`+
+    c.map(r=>r.map(x=>`<div class="cell ${G.marks.has(ci+'-'+x)?'m':''} ${x===last?'c':''}" onclick="mark(${ci},${x})">${fa(x)}</div>`).join('')).join('')+`</div></div>`).join('');
+}
+function mark(ci,x){const k=ci+'-'+x;G.marks.has(k)?G.marks.delete(k):G.marks.add(k);renderCards()}
+function claimBar(){
+  // بهترین کارت: اولی که ردیف کامل دارد، وگرنه اولی
+  let i=G.cards.findIndex(c=>cardWins(c,G.called));claim(i<0?0:i);
+}
+function claim(i){
+  if(G.over)return;
+  if(role==='host'){if(!hostClaim(me.name,G.cards,i))toast('❌ هنوز یک ردیف کامل نشده')}
+  else send(dc,{t:'claim',i});
+}
+function showWin(m){
+  if(m.none){$('ovT').textContent='همهٔ اعداد خوانده شد';$('ovB').innerHTML='<p>برنده‌ای نداشتیم 😅</p>'}
+  else{
+    $('ovT').textContent='🏆 دبرنا!';
+    const called=new Set(m.called||[]);
+    $('ovB').innerHTML=`<p style="font-size:20px;text-align:center"><b>${esc(m.name)}</b> برنده شد!</p><p style="text-align:center">💰 جایزه: <b>${money(m.pot)}</b></p><div class="cardw"><div class="grid">`+
+      m.card.map(r=>r.map(x=>`<div class="cell ${called.has(x)?'m':''}">${fa(x)}</div>`).join('')).join('')+`</div></div>`;
+  }
+  $('ovBtn').textContent=role==='host'?'🔄 دور جدید':'بستن';
+  $('ov').classList.add('on');
+}
+/* ---------- تنظیمات و نصب ---------- */
+let deferredInstall=null;
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e});
+addEventListener('appinstalled',()=>toast('نصب شد ✅'));
+function openSet(){$('setOv').classList.add('on')}
+function installApp(){
+  if(deferredInstall){deferredInstall.prompt();deferredInstall=null}
+  else{toast('از منوی ⋮ مرورگر «Add to Home screen» را بزنید');$('instHelp').style.color='#f5b301'}
+}
+function closeOv(){
+  $('ov').classList.remove('on');
+  if(role==='host'){G.running=false;clearInterval(G.timer);show('s-host');renderLobby();toast('آمادهٔ دور جدید')}
+  else{G.running=false;show('s-wait')}
+}
+</script>
+</body>
+</html>
